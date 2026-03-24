@@ -42,19 +42,31 @@ Chương trình cài đặt và so sánh trực tiếp 3 thuật toán sau:
     * **Biểu đồ/Bảng so sánh thời gian thực thi (Execution Time)** tính bằng mili-giây, minh chứng rõ ràng sự đánh đổi giữa Tốc độ (Greedy) và Độ chính xác (DP, B&B).
 
 ## 💻 Công nghệ Sử dụng
-* **Ngôn ngữ lập trình:** Python
-* **Giao diện người dùng (UI):** Windows Forms (WinForms) / WPF
+* **Ngôn ngữ lập trình:** Python 3.x
+* **Giao diện người dùng (UI):** Tkinter (thư viện GUI tích hợp sẵn trong Python)
 * **Quản lý dữ liệu:** Lưu trữ danh sách trang bị bằng cấu trúc JSON hoặc danh sách đối tượng (Object List) trong bộ nhớ.
+* **Thư viện hỗ trợ:** `json`, `time`, `matplotlib` (vẽ biểu đồ so sánh hiệu suất)
 
 ## 🛠️ Hướng dẫn Cài đặt và Sử dụng
 1. Clone repository này về máy:
    ```bash
-   git clone https://github.com/your-username/LOL-Knapsack-Optimizer.git
+   git clone https://github.com/Phiadz/L.O.L-Item-Optimizer.git
+   cd L.O.L-Item-Optimizer
    ```
-2. Mở file solution (`.sln`) bằng **Visual Studio**.
-3. Build và Run chương trình (phím `F5`).
-4. Tại giao diện chính, load file dữ liệu `items_data.json` có sẵn (chứa thông tin của khoảng 50+ trang bị LOL).
-5. Nhập số Vàng (ví dụ: 10000 Gold) và nhấn **"Run Analysis"**.
+2. Đảm bảo đã cài **Python 3.x**. Kiểm tra bằng lệnh:
+   ```bash
+   python --version
+   ```
+3. Cài đặt các thư viện cần thiết:
+   ```bash
+   pip install matplotlib
+   ```
+4. Chạy chương trình:
+   ```bash
+   python main.py
+   ```
+5. Tại giao diện chính, load file dữ liệu `items_data.json` có sẵn (chứa thông tin của khoảng 50+ trang bị LOL).
+6. Nhập số Vàng (ví dụ: 10000 Gold) và nhấn **"Run Analysis"**.
 
 ## 👥 Thành viên Nhóm (Nhóm 2)
 | STT | Họ và Tên | Mã Số Sinh Viên | Nhiệm vụ chính |
