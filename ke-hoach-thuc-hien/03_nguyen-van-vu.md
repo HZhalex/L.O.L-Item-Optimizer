@@ -1,102 +1,87 @@
-﻿# Kế Hoạch Thực Hiện — Nguyễn Văn Vũ (MSSV: 077206001635)
+# Kế Hoạch Thực Hiện — Nguyễn Văn Vũ
 
-**Vai trò:** Thiết kế giao diện UI/UX (Tkinter), Thực hiện slide thuyết trình phần 13-24
+**Vai trò:** Nghiên cứu, cài đặt code và viết tài liệu báo cáo cho thuật toán Rabin-Karp; phụ trách nửa sau slide thuyết trình
 
 ---
 
 ## 1. Tổng Quan Nhiệm Vụ
 
-Nguyễn Văn Vũ phụ trách phần trải nghiệm người dùng và thuyết trình nửa sau:
+Nguyễn Văn Vũ phụ trách thuật toán Rabin-Karp và phần slide cuối của nhóm:
 
-1. Viết code giao diện chạy được end-to-end với 3 thuật toán.
-2. Chuẩn bị bộ slide 13-24 bám theo dữ liệu chạy thực tế của chương trình.
+1. Nghiên cứu và cài đặt Rabin-Karp, tập trung vào cơ chế hash trượt.
+2. Viết tài liệu báo cáo cho Rabin-Karp.
+3. Thiết kế nửa sau bộ slide thuyết trình (slide 13-24).
 
 ---
 
 ## 2. Nội Dung Công Việc Chi Tiết
 
-### 2.1 Viết code UI chính trong `ui/main_window.py`
+### 2.1 Cài đặt thuật toán Rabin-Karp
 
-**Bố cục bắt buộc có:**
+**Mục tiêu:** so khớp chuỗi bằng hash để hỗ trợ phát hiện nhiều đoạn trùng lặp trong văn bản.
 
-- Panel trái: danh sách item (`TreeView` cột Name, Gold, Power, Ratio).
-- Panel phải trên: nhập `max_gold`, chọn thuật toán (DP/Greedy/B&B), nút chạy.
-- Panel phải dưới: hiển thị kết quả theo tab từng thuật toán.
+**Việc cần làm cụ thể:**
 
-**Chức năng bắt buộc phải code:**
+- Xây dựng hàm hash cho pattern và từng cửa sổ của text.
+- Cài đặt rolling hash để cập nhật nhanh khi cửa sổ dịch chuyển.
+- Xử lý va chạm hash bằng bước so sánh chuỗi thật khi hash trùng.
+- Trả về danh sách vị trí match và số lần kiểm tra hợp lệ.
 
-1. Load dữ liệu từ JSON.
-2. Thêm/Sửa/Xóa item trên UI.
-3. Chạy thuật toán theo checkbox đã chọn.
-4. Hiển thị `selected_items`, `total_power`, `gold_used`, `gold_remaining`, `exec_time_ms`.
+**Yêu cầu kỹ thuật:**
 
-### 2.2 Kết nối thuật toán với UI (mức code)
+- Chọn base và modulo hợp lý để giảm va chạm.
+- Hỗ trợ nhiều file văn bản trong một corpus.
 
-**Khung gọi hàm bắt buộc:**
+### 2.2 Viết tài liệu báo cáo cho Rabin-Karp
 
-```python
-if run_dp:
-	results["DP"] = dp_solve(items, max_gold)
-if run_greedy:
-	results["Greedy"] = greedy_solve(items, max_gold)
-if run_bnb:
-	results["B&B"] = bnb_solve(items, max_gold)
-```
+**Nội dung cần có:**
 
-**Validation bắt buộc:**
+- Giới thiệu ý tưởng dùng hash trượt.
+- Mô tả ưu điểm khi cần kiểm tra trên nhiều văn bản.
+- Phân tích độ phức tạp trung bình và trường hợp xấu nhất.
+- Giải thích cách xử lý va chạm hash và vai trò của bước xác minh lại.
+- So sánh Rabin-Karp với Naive, KMP và Boyer-Moore.
 
-- Không cho chạy khi chưa có dữ liệu item.
-- `max_gold` phải là số nguyên dương.
-- Bắt và hiển thị lỗi bằng `messagebox.showerror`.
+### 2.3 Thiết kế nửa sau slide thuyết trình
 
-### 2.3 Hiển thị biểu đồ so sánh
+**Slide 13-24 đề xuất:**
 
-**Yêu cầu:**
+1. Slide 13: Giới thiệu Rabin-Karp.
+2. Slide 14: Cơ chế hash trượt.
+3. Slide 15: Ví dụ minh họa rolling hash.
+4. Slide 16: Xử lý va chạm hash.
+5. Slide 17: Kết quả chạy trên bộ test nhỏ.
+6. Slide 18: Kết quả chạy trên kho dữ liệu lớn.
+7. Slide 19: So sánh Rabin-Karp với Naive và KMP.
+8. Slide 20: So sánh Rabin-Karp với Boyer-Moore.
+9. Slide 21: Biểu đồ thời gian thực nghiệm.
+10. Slide 22: Biểu đồ tỷ lệ match/phát hiện đạo văn.
+11. Slide 23: Hạn chế và hướng tối ưu.
+12. Slide 24: Kết luận và chuyển sang Q&A.
 
-- Dùng `matplotlib` vẽ 2 biểu đồ cột:
-  1. Thời gian chạy theo thuật toán.
-  2. Tổng sức mạnh theo thuật toán.
-- Có nhãn giá trị trên cột.
-- Có nút mở biểu đồ từ giao diện chính.
+**Quy tắc trình bày slide:**
 
-### 2.4 Thực hiện slide 13-24 (cụ thể từng slide)
-
-**Slide 13-24 đề xuất bắt buộc:**
-
-1. Slide 13: Tổng quan kiến trúc giao diện.
-2. Slide 14: Luồng thao tác người dùng (Load -> Nhập vàng -> Chạy).
-3. Slide 15: Màn hình quản lý item.
-4. Slide 16: Màn hình kết quả theo tab thuật toán.
-5. Slide 17: Biểu đồ so sánh runtime.
-6. Slide 18: Biểu đồ so sánh total power.
-7. Slide 19: Demo case 1 (dữ liệu nhỏ, dễ hiểu).
-8. Slide 20: Demo case 2 (dữ liệu lớn, thấy khác biệt tốc độ).
-9. Slide 21: So sánh kết quả DP vs Greedy vs B&B.
-10. Slide 22: Vấn đề gặp phải khi tích hợp và cách xử lý.
-11. Slide 23: Tổng kết phần triển khai sản phẩm.
-12. Slide 24: Chuyển tiếp sang phần hỏi đáp/kết luận nhóm.
-
-**Chuẩn slide cần tuân thủ:**
-
-- Mỗi slide không quá 6 gạch đầu dòng.
-- Có ảnh chụp màn hình thật từ chương trình.
-- Thống nhất template với slide 1-12 do Huỳnh Gia Huy làm.
+- Mỗi slide một ý chính.
+- Ít chữ, nhiều hình minh họa.
+- Dùng thống nhất font và màu với nửa đầu slide của Hoàng Văn Hưng.
 
 ---
 
-## 3. Timeline
+## 3. Timeline (Tuần 4 đến Tuần 8)
 
 | Tuần | Công việc | Đầu ra cụ thể |
 |---|---|---|
-| Tuần 1 | Chốt wireframe và luồng UI | Sơ đồ màn hình + danh sách widget |
-| Tuần 2 | Code các chức năng chính của giao diện | UI thao tác được với dữ liệu thật |
-| Tuần 3 | Tích hợp 3 thuật toán và biểu đồ | Kết quả và chart hiển thị đúng |
-| Tuần 4 | Hoàn thiện slide 13-24 và dọn giao diện | File slide hoàn chỉnh + UI demo ổn định |
+| Tuần 4 | Nghiên cứu Rabin-Karp và xác định base/hash | Dàn ý thuật toán và slide |
+| Tuần 5 | Cài đặt hash trượt và hàm search | File code Rabin-Karp chạy được |
+| Tuần 6 | Viết doc báo cáo cho Rabin-Karp | Mục Rabin-Karp trong báo cáo |
+| Tuần 7 | Thiết kế slide 13-24 | Bộ slide nửa sau hoàn chỉnh |
+| Tuần 8 | Rà soát, tối ưu trình bày, chốt demo | Slide và code sẵn sàng nộp |
 
 ---
 
-## 4. Phối hợp
+## 4. Phối Hợp
 
-- Với Lê Thiên Lộc: chuẩn hóa API hàm `solve` để UI gọi thống nhất.
-- Với Đỗ Đình Chiến và Hoàng Văn Hưng: xác nhận ý nghĩa kết quả hiển thị cho Greedy và B&B.
-- Với Huỳnh Gia Huy: test giao diện bằng dataset thật và đồng bộ template slide.
+- Phối hợp với Lê Thiên Lộc để tích hợp thuật toán vào giao diện chung.
+- Phối hợp với Đỗ Đình Chiến để so sánh Rabin-Karp với Naive/KMP.
+- Phối hợp với Huỳnh Gia Huy để lấy dữ liệu benchmark và file test.
+- Phối hợp với Nguyễn Thái Lộc để đưa số liệu thực nghiệm vào báo cáo và biểu đồ.

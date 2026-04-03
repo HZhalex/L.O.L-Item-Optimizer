@@ -1,78 +1,156 @@
-# 🛡️ L.O.L Item Optimizer: Giải Quyết Bài Toán Cái Balo (0/1 Knapsack Problem)
+# Hệ Thống Phát Hiện Đạo Văn bằng String Matching
 
-## 📌 Giới thiệu Dự án
-Dự án này là chương trình mô phỏng và phân tích hiệu suất của các thuật toán kinh điển trong việc giải quyết **Bài toán Cái Balo (0/1 Knapsack Problem)**. 
+## 1. Giới thiệu dự án
 
-Thay vì sử dụng các ví dụ xếp hàng hóa khô khan, nhóm chúng tôi ứng dụng bài toán này vào tựa game **Liên Minh Huyền Thoại (League of Legends)**. Mục tiêu của chương trình là tìm ra tổ hợp trang bị tối ưu nhất cho một vị tướng để đạt được ngưỡng sức mạnh cao nhất, dựa trên lượng Vàng (Gold) đang có giới hạn.
+Dự án xây dựng một hệ thống phát hiện đạo văn dựa trên bài toán **String Matching** trong Python. Chương trình cho phép người dùng tải lên văn bản nguồn hoặc một kho tài liệu tham chiếu, sau đó so khớp nội dung để phát hiện các đoạn trùng lặp, đánh dấu vị trí khớp, và thống kê tỷ lệ tương đồng giữa các văn bản.
 
-Dự án được thực hiện nhằm mục đích phục vụ môn học **Phân tích Thiết kế Giải thuật**.
+Mục tiêu của dự án là tạo ra một công cụ có thể:
 
-## 🎮 Mô tả Bài toán trong ngữ cảnh Liên Minh Huyền Thoại
-Bài toán Cái Balo 0/1 được ánh xạ vào game như sau:
-* **Cái Balo (Knapsack):** Túi đồ của tướng.
-* **Trọng lượng tối đa (Capacity - $W$):** Tổng số **Vàng** tối đa mà người chơi đang sở hữu.
-* **Đồ vật (Items):** Các trang bị trong cửa hàng LOL (Vô Cực Kiếm, Mũ Phù Thủy, Giáp Máu...). Mỗi trang bị chỉ được mua tối đa 1 lần (đặc trưng của 0/1 Knapsack).
-* **Trọng lượng đồ vật ($w_i$):** Giá **Vàng** của trang bị.
-* **Giá trị đồ vật ($v_i$):** **Điểm Sức Mạnh** tổng hợp của trang bị (được tính toán dựa trên các chỉ số như SMCK, SMPT, Máu, Điểm hồi kỹ năng...).
+- phát hiện nhanh các đoạn text có dấu hiệu sao chép;
+- so sánh hiệu năng của nhiều thuật toán string matching;
+- hiển thị rõ các đoạn nghi vấn bằng highlight trực quan;
+- tổng hợp kết quả thực nghiệm để phục vụ báo cáo môn học **Phân tích Thiết kế Giải thuật**.
 
-**Mục tiêu:** Chọn ra một tập hợp các trang bị sao cho tổng Điểm Sức Mạnh là **lớn nhất** mà tổng giá Vàng không vượt quá số Vàng đang có.
+---
 
-## ⚙️ Các Thuật Toán Áp Dụng và Phân Tích
-Chương trình cài đặt và so sánh trực tiếp 3 thuật toán sau:
+## 2. Bài toán trong ngữ cảnh phát hiện đạo văn
 
-### 1. Quy hoạch động (Dynamic Programming - DP)
-* **Cách hoạt động:** Thuật toán chia bài toán lớn thành các bài toán con nhỏ hơn và lưu kết quả vào một bảng phương án 2 chiều. Công thức truy hồi cốt lõi: 
-    $$V[i][w] = \max(V[i-1][w], V[i-1][w - w_i] + v_i)$$
-* **Đánh giá:** Đây là thuật toán **luôn đảm bảo tìm ra kết quả tối ưu tuyệt đối**. Tuy nhiên, độ phức tạp thời gian và không gian là $O(N \times W)$ (với $N$ là số trang bị, $W$ là số Vàng). Khi số Vàng ($W$) lên đến hàng chục ngàn, thuật toán này sẽ tiêu tốn rất nhiều bộ nhớ.
+Trong hệ thống này, bài toán được ánh xạ như sau:
 
-### 2. Thuật toán Tham lam (Greedy Algorithm)
-* **Cách hoạt động:** Tính tỷ lệ "Sức mạnh trên mỗi Đồng Vàng" ($v_i / w_i$) cho từng trang bị. Sau đó, sắp xếp các trang bị theo tỷ lệ này giảm dần và ưu tiên nhặt các trang bị có tỷ lệ cao nhất cho đến khi hết Vàng.
-* **Đánh giá:** Tốc độ chạy cực kỳ nhanh, độ phức tạp chỉ phụ thuộc vào thuật toán sắp xếp $O(N \log N)$. Tuy nhiên, **kết quả thường không phải là tối ưu nhất** vì thuật toán có thể bị kẹt ở "tối ưu cục bộ" (chọn một món đồ tỷ lệ cao nhưng chiếm quá nhiều Vàng, bỏ lỡ cơ hội kết hợp nhiều món đồ nhỏ có tổng sức mạnh lớn hơn).
+- **Pattern**: đoạn văn hoặc câu cần kiểm tra.
+- **Text**: văn bản nguồn hoặc văn bản nghi vấn.
+- **Corpus**: tập hợp nhiều file tài liệu dùng làm kho so sánh.
+- **Match position**: vị trí xuất hiện của chuỗi khớp trong văn bản.
+- **Similarity rate**: tỷ lệ trùng lặp giữa tài liệu nghi vấn và kho dữ liệu.
 
-### 3. Quay lui Nhánh cận (Branch and Bound)
-* **Cách hoạt động:** Duyệt qua không gian trạng thái bằng cây nhị phân (chọn hoặc không chọn trang bị). Sử dụng một hàm đánh giá (Bound) để dự đoán giá trị tối đa có thể đạt được ở các nhánh con. Nếu giá trị dự đoán này nhỏ hơn kỷ lục hiện tại (Best Value), thuật toán sẽ cắt bỏ nhánh đó (Pruning) để tiết kiệm thời gian.
-* **Đánh giá:** Vẫn đảm bảo ra kết quả tối ưu 100% giống Quy hoạch động. Trong trường hợp tốt (cắt nhánh hiệu quả), nó chạy nhanh hơn DP và tốn ít bộ nhớ hơn. Nhưng ở trường hợp xấu nhất, độ phức tạp vẫn là O(2^N).
+**Mục tiêu:** xác định chính xác đoạn nội dung bị trùng, làm nổi bật phần khớp, và cung cấp số liệu đo lường để đánh giá mức độ tương đồng.
 
-## 🚀 Tính năng của Chương trình
-1.  **Quản lý Dữ liệu Trang bị:** Cho phép người dùng Thêm/Sửa/Xóa các trang bị LOL với các thông số Giá Vàng và Điểm Sức Mạnh.
-2.  **Thiết lập Đầu vào:** Nhập số Vàng tối đa mà người chơi đang có.
-3.  **Thực thi Thuật toán:** Cho phép chạy độc lập hoặc chạy đồng thời cả 3 thuật toán (DP, Greedy, Branch & Bound).
-4.  **Bảng Xếp Hạng & Báo Cáo:** * Hiển thị danh sách trang bị được chọn bởi từng thuật toán.
-    * Tổng Sức mạnh đạt được và Số Vàng còn dư.
-    * **Biểu đồ/Bảng so sánh thời gian thực thi (Execution Time)** tính bằng mili-giây, minh chứng rõ ràng sự đánh đổi giữa Tốc độ (Greedy) và Độ chính xác (DP, B&B).
+---
 
-## 💻 Công nghệ Sử dụng
-* **Ngôn ngữ lập trình:** Python 3.x
-* **Giao diện người dùng (UI):** Tkinter (thư viện GUI tích hợp sẵn trong Python)
-* **Quản lý dữ liệu:** Lưu trữ danh sách trang bị bằng cấu trúc JSON hoặc danh sách đối tượng (Object List) trong bộ nhớ.
-* **Thư viện hỗ trợ:** `json`, `time`, `matplotlib` (vẽ biểu đồ so sánh hiệu suất)
+## 3. Bốn thuật toán áp dụng
 
-## 🛠️ Hướng dẫn Cài đặt và Sử dụng
-1. Clone repository này về máy:
-   ```bash
-   git clone https://github.com/Phiadz/L.O.L-Item-Optimizer.git
-   cd L.O.L-Item-Optimizer
-   ```
-2. Đảm bảo đã cài **Python 3.x**. Kiểm tra bằng lệnh:
-   ```bash
-   python --version
-   ```
-3. Cài đặt các thư viện cần thiết:
-   ```bash
-   pip install matplotlib
-   ```
-4. Chạy chương trình:
-   ```bash
-   python main.py
-   ```
-5. Tại giao diện chính, load file dữ liệu `items_data.json` có sẵn (chứa thông tin của khoảng 50+ trang bị LOL).
-6. Nhập số Vàng (ví dụ: 10000 Gold) và nhấn **"Run Analysis"**.
+### 3.1 Brute-Force (Naive)
 
-## 👥 Thành viên Nhóm (Nhóm 2)
-| STT | Họ và Tên | Mã Số Sinh Viên | Nhiệm vụ chính |
-| :--- | :--- | :--- | :--- |
-| 1 | Lê Thiên Lộc | 079306040024 | Thiết kế kiến trúc phần mềm, Cài đặt thuật toán Quy hoạch động (DP), Quản lý Git, Viết tài liệu phân tích thuật toán DP |
-| 2 | Đỗ Đình Chiến | 51205005553 | Cài đặt thuật toán Tham lam (Greedy), Viết tài liệu phân tích thuật toán Greedy |
-| 3 | Nguyễn Văn Vũ | 077206001635 | Thiết kế giao diện (UI/UX), Tích hợp hiển thị kết quả, Thực hiện slide thuyết trình 13-24 |
-| 4 | Huỳnh Gia Huy | 079206018609 | Xây dựng bộ dữ liệu test, Viết các phần báo cáo còn lại của dự án (trừ phân tích 3 thuật toán), Thực hiện slide 1-12, Hỗ trợ kiểm thử UI |
-| 5 | Hoàng Văn Hưng | 040206020805 | Cài đặt thuật toán Quay lui Nhánh cận (Branch and Bound), Viết tài liệu phân tích thuật toán B&B |
+Thuật toán duyệt lần lượt từng vị trí trong văn bản và so sánh từng ký tự của pattern với text.
+
+**Ưu điểm:** dễ cài đặt, dễ kiểm tra đúng sai, phù hợp làm baseline.
+
+**Nhược điểm:** chậm khi dữ liệu lớn vì có nhiều phép so sánh lặp lại.
+
+**Độ phức tạp:** worst-case $O(nm)$ với $n$ là độ dài text và $m$ là độ dài pattern.
+
+### 3.2 KMP (Knuth-Morris-Pratt)
+
+KMP xây dựng bảng tiền tố/hậu tố để tránh quay lại so sánh từ đầu khi xảy ra mismatch.
+
+**Ưu điểm:** chạy tuyến tính, ổn định với dữ liệu lớn.
+
+**Nhược điểm:** phần tiền xử lý phức tạp hơn Naive.
+
+**Độ phức tạp:** $O(n + m)$.
+
+### 3.3 Rabin-Karp
+
+Rabin-Karp dùng hash trượt để so sánh cửa sổ văn bản với pattern.
+
+**Ưu điểm:** phù hợp khi cần kiểm tra nhiều đoạn hoặc nhiều pattern; rất hiệu quả nếu hash tốt.
+
+**Nhược điểm:** có thể gặp va chạm hash, cần xử lý xác minh lại bằng so sánh chuỗi thật.
+
+**Độ phức tạp:** trung bình gần $O(n + m)$, xấu nhất có thể về $O(nm)$ nếu va chạm nhiều.
+
+### 3.4 Boyer-Moore
+
+Boyer-Moore so sánh từ phải sang trái và dùng hai heuristic chính: bad character và good suffix.
+
+**Ưu điểm:** thường rất nhanh trong thực tế, đặc biệt với văn bản dài.
+
+**Nhược điểm:** cài đặt phức tạp hơn các thuật toán còn lại.
+
+**Độ phức tạp:** thực tế thường tốt hơn tuyến tính, worst-case vẫn có thể cao.
+
+---
+
+## 4. Tính năng của hệ thống
+
+1. Upload file văn bản đầu vào và kho tài liệu tham chiếu.
+2. Chọn một hoặc nhiều thuật toán để so sánh.
+3. Tô sáng đoạn text bị trùng trong giao diện.
+4. Hiển thị vị trí match, số lần match, tỷ lệ tương đồng và thời gian chạy.
+5. Xuất báo cáo thực nghiệm và biểu đồ so sánh hiệu năng.
+
+---
+
+## 5. Công nghệ sử dụng
+
+- **Ngôn ngữ:** Python 3.x
+- **Giao diện:** Tkinter hoặc PyQt
+- **Xử lý dữ liệu:** đọc file text, chuẩn hóa nội dung, so khớp chuỗi
+- **Trực quan hóa:** matplotlib
+
+---
+
+## 6. Cấu trúc dự kiến của dự án
+
+```text
+plagiarism-detection/
+├── main.py
+├── README.md
+├── algorithms/
+│   ├── brute_force.py
+│   ├── kmp.py
+│   ├── rabin_karp.py
+│   └── boyer_moore.py
+├── ui/
+│   ├── main_window.py
+│   └── result_view.py
+├── utils/
+│   ├── file_loader.py
+│   ├── timer.py
+│   └── text_normalizer.py
+├── data/
+│   ├── corpus/
+│   └── test_cases/
+└── report/
+```
+
+---
+
+## 7. Hướng dẫn cài đặt và chạy
+
+1. Cài Python 3.x.
+2. Cài các thư viện cần thiết:
+
+```bash
+pip install matplotlib
+```
+
+3. Chạy chương trình:
+
+```bash
+python main.py
+```
+
+4. Tải file văn bản và chọn thuật toán để phân tích.
+
+---
+
+## 8. Thành viên nhóm
+
+| STT | Họ và tên | Nhiệm vụ chính |
+|---|---|---|
+| 1 | Lê Thiên Lộc | Thiết kế kiến trúc tổng thể, quản lý Git, thiết kế UI/UX bằng Tkinter/PyQt, tích hợp highlight đoạn đạo văn |
+| 2 | Đỗ Đình Chiến | Nghiên cứu, cài đặt và viết doc cho Brute-Force và KMP |
+| 3 | Nguyễn Văn Vũ | Nghiên cứu, cài đặt và viết doc cho Rabin-Karp, phụ trách nửa sau slide thuyết trình |
+| 4 | Nguyễn Thái Lộc | Viết báo cáo phân tích độ phức tạp, so sánh 4 thuật toán, vẽ biểu đồ thực nghiệm |
+| 5 | Huỳnh Gia Huy | Xây dựng bộ dữ liệu test, crawl/tổng hợp kho text, viết script đo thời gian và tỷ lệ trùng lặp |
+| 6 | Hoàng Văn Hưng | Nghiên cứu, cài đặt và viết doc cho Boyer-Moore, thiết kế nửa đầu slide thuyết trình |
+
+---
+
+## 9. Mục tiêu đầu ra
+
+- Một hệ thống phát hiện đạo văn chạy được trên Python.
+- 4 thuật toán string matching được cài đặt rõ ràng và so sánh được.
+- Bộ dữ liệu test phong phú và có script đo lường.
+- Báo cáo và slide thuyết trình đầy đủ, chuyên nghiệp.

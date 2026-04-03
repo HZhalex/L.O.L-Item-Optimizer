@@ -1,126 +1,98 @@
-﻿# Kế Hoạch Thực Hiện — Lê Thiên Lộc (MSSV: 079306040024)
+# Kế Hoạch Thực Hiện — Lê Thiên Lộc
 
-**Vai trò:** Thiết kế kiến trúc phần mềm, Cài đặt thuật toán Quy hoạch động (DP), Quản lý Git, Viết tài liệu phân tích thuật toán DP
+**Vai trò:** Thiết kế kiến trúc tổng thể, Quản lý Git, Thiết kế UI/UX bằng Tkinter/PyQt, tích hợp highlight đoạn text nghi vấn đạo văn
 
 ---
 
 ## 1. Tổng Quan Nhiệm Vụ
 
-Lê Thiên Lộc là đầu mối kỹ thuật của nhóm, chịu trách nhiệm 4 mảng:
+Lê Thiên Lộc là người phụ trách nền tảng kỹ thuật và trải nghiệm người dùng của dự án. Công việc chính gồm:
 
-1. Chốt kiến trúc code và giao diện API chung để 3 thuật toán tích hợp đồng nhất.
-2. Viết code hoàn chỉnh thuật toán DP trong `algorithms/dp.py`.
-3. Quản lý nhánh Git, review PR, kiểm soát merge.
-4. Viết phần báo cáo phân tích thuật toán DP (lý thuyết + thực nghiệm).
+1. Thiết kế kiến trúc tổng thể của hệ thống phát hiện đạo văn.
+2. Chuẩn hóa cấu trúc module và luồng dữ liệu giữa giao diện, thuật toán và dữ liệu.
+3. Thiết kế giao diện upload file, hiển thị kết quả, và highlight đoạn text bị trùng.
+4. Quản lý Git, nhánh phát triển và quy trình merge của nhóm.
 
 ---
 
 ## 2. Nội Dung Công Việc Chi Tiết
 
-### 2.1 Kiến trúc và chuẩn giao tiếp giữa các module
+### 2.1 Thiết kế kiến trúc phần mềm
 
-**File cần chốt:**
+**Mục tiêu:** tạo ra một cấu trúc dự án rõ ràng, dễ mở rộng và dễ tích hợp 4 thuật toán string matching.
 
-- `models/item.py`: model dữ liệu `Item`.
-- `algorithms/dp.py`, `algorithms/greedy.py`, `algorithms/branch_and_bound.py`: chuẩn hàm `solve`.
-- `utils/data_loader.py`: đọc/ghi dữ liệu item.
-- `ui/main_window.py`: gọi các thuật toán và hiển thị.
+**Việc cần làm cụ thể:**
 
-**Chuẩn API bắt buộc cho mọi thuật toán:**
+- Chốt cấu trúc thư mục: `algorithms`, `ui`, `utils`, `data`, `reports`.
+- Định nghĩa chuẩn đầu vào/đầu ra cho các thuật toán:
+  - input: `pattern`, `text`, hoặc danh sách file trong corpus
+  - output: vị trí match, số lần match, tỷ lệ trùng lặp, thời gian chạy
+- Tạo luồng xử lý thống nhất:
+  - upload file
+  - tiền xử lý text
+  - chạy thuật toán
+  - tổng hợp kết quả
+  - highlight đoạn khớp
+- Xác định các hàm dùng chung như normalize text, đọc file, đo thời gian, xuất báo cáo.
 
-```python
-def solve(items: list[Item], max_gold: int) -> dict:
-	return {
-		"selected_items": list[Item],
-		"total_power": float,
-		"gold_used": int,
-		"gold_remaining": int,
-		"exec_time_ms": float,
-	}
-```
+### 2.2 Thiết kế UI/UX
 
-**Checklist phải làm xong:**
+**Mục tiêu:** giao diện phải trực quan, dễ dùng, có thể nạp dữ liệu và hiển thị kết quả đạo văn rõ ràng.
 
-- Thống nhất kiểu dữ liệu trước khi mọi người code thuật toán.
-- Chốt cách đặt tên key trong dict kết quả.
-- Chốt quy ước import package để tránh lỗi vòng lặp import.
+**Các màn hình cần thiết kế:**
 
-### 2.2 Cài đặt thuật toán DP (cụ thể mức code)
+- Cửa sổ chính để chọn file văn bản và kho dữ liệu.
+- Khu vực preview văn bản gốc.
+- Khu vực hiển thị đoạn match được highlight.
+- Panel thống kê: số lần match, phần trăm trùng lặp, thời gian chạy.
+- Khu vực chọn thuật toán để so sánh.
 
-**Mục tiêu code:** triển khai đầy đủ 4 bước trong `algorithms/dp.py`.
+**Đầu việc kỹ thuật:**
 
-1. Khởi tạo bảng `dp` kích thước `(n+1) x (W+1)`.
-2. Điền bảng theo công thức truy hồi 0/1 knapsack.
-3. Truy vết ngược từ `dp[n][W]` để lấy `selected_items`.
-4. Tính `gold_used`, `gold_remaining`, đo `exec_time_ms` bằng `time.perf_counter()`.
+- Thiết kế layout bằng Tkinter hoặc PyQt.
+- Làm nút `Upload File`, `Run Analysis`, `Compare Algorithms`, `Export Result`.
+- Bổ sung scrollbar, khung preview dài, và hiển thị màu cho các đoạn khớp.
+- Đảm bảo giao diện không bị rối khi văn bản dài.
 
-**Công thức bắt buộc ghi trong comment/tài liệu:**
+### 2.3 Quản lý Git và quy trình phát triển
 
-$$
-dp[i][w] =
-\begin{cases}
-dp[i-1][w], & \text{nếu } gold_i > w \\
-\max(dp[i-1][w],\ dp[i-1][w-gold_i] + power_i), & \text{nếu } gold_i \le w
-\end{cases}
-$$
+**Mục tiêu:** đảm bảo các thành viên code song song nhưng vẫn merge ổn định.
 
-**Case biên cần xử lý trong code:**
+**Việc cần làm:**
 
-- `items` rỗng.
-- `max_gold <= 0`.
-- item có `gold <= 0` (bỏ qua hoặc chuẩn hóa).
+- Tạo nhánh chính và nhánh feature cho từng module.
+- Quy định commit message rõ ràng theo module.
+- Review PR trước khi merge.
+- Kiểm tra xung đột giữa UI, thuật toán và dữ liệu test.
 
-**Output code bắt buộc:**
+### 2.4 Tích hợp và kiểm thử giao diện
 
-- File `algorithms/dp.py` chạy độc lập không crash.
-- Kết quả DP khớp B&B ở cùng input.
+**Mục tiêu:** bảo đảm UI gọi được đúng các thuật toán và hiển thị đúng kết quả.
 
-### 2.3 Quản lý Git (làm cụ thể từng bước)
+**Phối hợp tích hợp:**
 
-**Nhánh đề xuất:** `feature/dp-architecture`.
-
-**Quy trình làm việc bắt buộc:**
-
-1. Pull `develop` mới nhất trước khi code.
-2. Commit theo block nhỏ: kiến trúc -> DP core -> truy vết -> test.
-3. Tạo PR kèm mô tả test case đã chạy.
-4. Chỉ merge sau khi kiểm tra xung đột với UI và utils.
-
-**Mẫu commit:**
-
-- `[dp] implement table transition`
-- `[dp] add traceback selected items`
-- `[architecture] finalize shared solve() contract`
-
-### 2.4 Viết tài liệu phân tích DP (phần của Lộc trong báo cáo)
-
-**Phần bắt buộc phải viết:**
-
-1. Mô tả trạng thái và công thức truy hồi.
-2. Chứng minh tính đúng (ngắn gọn theo quy nạp).
-3. Phân tích độ phức tạp:
-   - Thời gian: $O(N \times W)$
-   - Không gian: $O(N \times W)$, mở rộng thêm bản tối ưu 1D là $O(W)$
-4. Nhận xét thực nghiệm từ bảng số liệu nhóm cung cấp.
-
-**Đầu ra tài liệu:** 2-4 trang nội dung DP, có công thức, có bảng nhận xét.
+- Gọi module Naive/KMP/Rabin-Karp/Boyer-Moore theo API thống nhất.
+- Nhận dữ liệu vị trí match từ các thuật toán để highlight trên màn hình.
+- Hiển thị đúng từng file văn bản và thống kê tương đồng.
+- Kiểm tra độ ổn định khi nạp nhiều file lớn.
 
 ---
 
-## 3. Timeline
+## 3. Timeline (Tuần 4 đến Tuần 8)
 
 | Tuần | Công việc | Đầu ra cụ thể |
 |---|---|---|
-| Tuần 1 | Chốt kiến trúc + API + quy tắc Git | Sơ đồ module và chuẩn `solve()` thống nhất |
-| Tuần 2 | Viết xong DP đầy đủ (core + traceback + timing) | `algorithms/dp.py` trả đúng format kết quả |
-| Tuần 3 | Đối chiếu kết quả DP với B&B, hỗ trợ tích hợp UI | Kết quả hiển thị ổn định trên UI |
-| Tuần 4 | Viết xong mục phân tích DP trong báo cáo | Mục DP hoàn chỉnh để ghép báo cáo cuối |
+| Tuần 4 | Chốt kiến trúc hệ thống và chuẩn API | Sơ đồ module, danh sách hàm chung |
+| Tuần 5 | Thiết kế layout UI/UX và prototype màn hình chính | Bản thiết kế giao diện đầu tiên |
+| Tuần 6 | Cài đặt khung giao diện, upload file, preview text | UI có thể nạp file và hiển thị nội dung |
+| Tuần 7 | Tích hợp highlight kết quả và khung so sánh thuật toán | Màn hình kết quả rõ ràng, dễ quan sát |
+| Tuần 8 | Review code, sửa lỗi giao diện, chuẩn bị demo | UI ổn định và sẵn sàng trình bày |
 
 ---
 
-## 4. Phối hợp
+## 4. Phối Hợp
 
-- Với Đỗ Đình Chiến: thống nhất kiểu input/output giữa DP và Greedy.
-- Với Hoàng Văn Hưng: đối chiếu `total_power(DP) == total_power(B&B)`.
-- Với Nguyễn Văn Vũ: cung cấp dữ liệu mẫu để test giao diện hiển thị kết quả.
-- Với Huỳnh Gia Huy: nhận bộ dữ liệu test và số liệu thực nghiệm cho phần viết báo cáo DP.
+- Phối hợp với Đỗ Đình Chiến và Nguyễn Văn Vũ để thống nhất dạng output của từng thuật toán.
+- Phối hợp với Huỳnh Gia Huy để kiểm thử giao diện bằng dữ liệu thật.
+- Phối hợp với Nguyễn Thái Lộc để đảm bảo UI hiển thị đúng số liệu thực nghiệm và biểu đồ.
+- Phối hợp với Hoàng Văn Hưng để thống nhất phần trình bày slide đầu và ngữ cảnh thuật toán.
