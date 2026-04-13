@@ -1,92 +1,95 @@
-﻿# Kế Hoạch Thực Hiện — Đỗ Đình Chiến (MSSV: 51205005553)
+# Kế Hoạch Thực Hiện — Đỗ Đình Chiến
 
-**Vai trò:** Cài đặt thuật toán Tham lam (Greedy), Viết tài liệu phân tích thuật toán Greedy
+**Vai trò:** Nghiên cứu, cài đặt code và viết tài liệu báo cáo cho 2 thuật toán: Brute-Force (Naive) và KMP
 
 ---
 
 ## 1. Tổng Quan Nhiệm Vụ
 
-Đỗ Đình Chiến phụ trách trọn gói phần Greedy của dự án:
+Đỗ Đình Chiến phụ trách hai thuật toán nền tảng của dự án:
 
-1. Viết code đầy đủ thuật toán Greedy trong `algorithms/greedy.py`.
-2. Viết mục báo cáo phân tích thuật toán Greedy (nguyên lý, độ phức tạp, giới hạn).
+1. Thuật toán Vét cạn (Brute-Force / Naive).
+2. Thuật toán KMP (Knuth-Morris-Pratt).
 
-Lưu ý phân công mới: không phụ trách code Branch and Bound.
+Ngoài phần code, Chiến còn phải viết tài liệu giải thích nguyên lý, minh họa cách chạy và phân tích độ phức tạp của hai thuật toán này.
 
 ---
 
 ## 2. Nội Dung Công Việc Chi Tiết
 
-### 2.1 Viết code thuật toán Greedy (cụ thể)
+### 2.1 Cài đặt thuật toán Brute-Force
 
-**Yêu cầu code bắt buộc:**
+**Mục tiêu:** tạo một baseline đơn giản để so sánh với các thuật toán còn lại.
 
-1. Tính `ratio = power / gold` cho mỗi item.
-2. Sắp xếp item giảm dần theo ratio (trên bản sao list).
-3. Duyệt list đã sắp xếp và chọn item nếu còn đủ vàng.
-4. Trả kết quả đúng format API chung.
+**Việc cần làm cụ thể:**
 
-**Khung xử lý cần có trong `greedy.py`:**
+- Viết hàm so khớp chuỗi theo kiểu duyệt từng vị trí của text.
+- Ở mỗi vị trí, so sánh lần lượt các ký tự của pattern.
+- Trả về danh sách vị trí match.
+- Hỗ trợ trường hợp nhiều match trong cùng một văn bản.
 
-```python
-sorted_items = sorted(items, key=lambda x: x.ratio(), reverse=True)
-selected = []
-gold_remaining = max_gold
-for item in sorted_items:
-	if item.gold <= gold_remaining:
-		selected.append(item)
-		gold_remaining -= item.gold
-```
+**Kết quả mong đợi:**
 
-**Case biên phải xử lý:**
+- Code dễ đọc, dễ kiểm tra, phù hợp làm thuật toán tham chiếu.
+- Có thể tính thời gian chạy và số phép so sánh để phục vụ báo cáo.
 
-- `items` rỗng.
-- `max_gold <= 0`.
-- item có giá trị `gold <= 0`.
+### 2.2 Cài đặt thuật toán KMP
 
-### 2.2 Kiểm thử cụ thể cho Greedy
+**Mục tiêu:** giảm số lần so sánh dư thừa bằng bảng tiền xử lý prefix.
 
-**Bộ test cần chuẩn bị:**
+**Việc cần làm cụ thể:**
 
-1. Test cơ bản (5-10 item, tính tay được).
-2. Test biên (`W=0`, list rỗng, chỉ 1 item).
-3. Test phản ví dụ: Greedy cho kết quả thấp hơn DP/B&B.
+- Xây dựng bảng prefix function / LPS.
+- Viết vòng lặp so khớp chính với cơ chế quay lui bằng LPS.
+- Trả về tất cả vị trí pattern xuất hiện trong text.
+- Đảm bảo thuật toán chạy đúng với nhiều kiểu dữ liệu: đoạn ngắn, đoạn dài, văn bản lặp lại nhiều.
 
-**Tiêu chí pass:**
+**Yêu cầu kỹ thuật:**
 
-- Không crash.
-- Dict output đúng key.
-- Runtime thấp hơn DP ở dataset lớn.
+- Tách rõ phần tiền xử lý và phần tìm kiếm.
+- Có test case riêng cho LPS và cho search.
 
-### 2.3 Viết tài liệu phân tích Greedy
+### 2.3 Viết tài liệu báo cáo cho Brute-Force và KMP
 
-**Nội dung phải có trong báo cáo:**
+**Nội dung báo cáo cần có:**
 
-1. Mô tả thuật toán theo từng bước.
-2. Phân tích độ phức tạp:
-   - Sắp xếp: $O(N \log N)$
-   - Duyệt: $O(N)$
-   - Tổng: $O(N \log N)$
-3. Giải thích vì sao Greedy không luôn tối ưu cho 0/1 Knapsack.
-4. Đưa phản ví dụ số cụ thể.
-5. Nhận xét thực nghiệm (nhanh nhưng không đảm bảo optimal).
+- Mô tả ý tưởng của Brute-Force và KMP.
+- So sánh vì sao KMP hiệu quả hơn Naive trên văn bản dài.
+- Phân tích độ phức tạp thời gian và không gian.
+- Có ví dụ minh họa từng bước để người đọc dễ hiểu.
+- Nêu hạn chế và tình huống phù hợp của mỗi thuật toán.
+
+**Đầu ra tài liệu:**
+
+- 1 chương hoặc 2 mục riêng biệt trong báo cáo chính.
+- Có bảng so sánh, có hình minh họa nếu cần.
+
+### 2.4 Kiểm thử
+
+**Các test cần chuẩn bị:**
+
+- Pattern xuất hiện ở đầu, giữa, cuối text.
+- Pattern không xuất hiện.
+- Pattern lặp nhiều lần.
+- Text ngắn hơn pattern.
 
 ---
 
-## 3. Timeline
+## 3. Timeline (Tuần 4 đến Tuần 8)
 
 | Tuần | Công việc | Đầu ra cụ thể |
 |---|---|---|
-| Tuần 1 | Code Greedy bản hoàn chỉnh đầu tiên | `algorithms/greedy.py` chạy được trên dữ liệu thật |
-| Tuần 2 | Viết test case và fix edge cases | Bộ test Greedy + minh họa phản ví dụ |
-| Tuần 3 | Đối chiếu Greedy với DP/B&B trên cùng dataset | Bảng so sánh quality và runtime |
-| Tuần 4 | Viết xong mục phân tích Greedy trong báo cáo | Mục Greedy hoàn chỉnh để ghép báo cáo cuối |
+| Tuần 4 | Nghiên cứu lý thuyết Naive và KMP | Dàn ý code và dàn ý báo cáo |
+| Tuần 5 | Cài đặt Brute-Force hoàn chỉnh | File code Naive chạy được |
+| Tuần 6 | Cài đặt KMP và bảng LPS | File code KMP chạy đúng |
+| Tuần 7 | Viết tài liệu báo cáo và test case | Chương báo cáo Naive + KMP |
+| Tuần 8 | Rà soát, sửa lỗi, chốt nội dung | Bộ code và tài liệu sẵn sàng nộp |
 
 ---
 
-## 4. Phối hợp
+## 4. Phối Hợp
 
-- Với Lê Thiên Lộc: thống nhất API chung và đối chiếu với DP.
-- Với Hoàng Văn Hưng: so sánh Greedy và B&B trên cùng input.
-- Với Huỳnh Gia Huy: lấy bộ test phản ví dụ và bộ test hiệu năng.
-- Với Nguyễn Văn Vũ: thống nhất thông điệp hiển thị trên UI rằng Greedy là heuristic.
+- Phối hợp với Lê Thiên Lộc để thống nhất API trả về kết quả match.
+- Phối hợp với Nguyễn Văn Vũ để so sánh Brute-Force/KMP với Rabin-Karp trên cùng bộ test.
+- Phối hợp với Huỳnh Gia Huy để lấy dữ liệu văn bản và test case đa dạng.
+- Phối hợp với Nguyễn Thái Lộc để thống nhất phần đánh giá độ phức tạp trong báo cáo.
