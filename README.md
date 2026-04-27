@@ -90,29 +90,74 @@ Boyer-Moore so sánh từ phải sang trái và dùng hai heuristic chính: bad 
 
 ---
 
-## 6. Cấu trúc dự kiến của dự án
+## 6. Cấu trúc dự án hiện tại
 
 ```text
 plagiarism-detection/
+├── .gitignore                   # Loại trừ file tạm, cache, môi trường ảo
 ├── main.py
-├── README.md
+├── README.md                    # Tài liệu tổng quan dự án
+├── requirements.txt             # Danh sách thư viện cần cài
 ├── algorithms/
-│   ├── brute_force.py
-│   ├── kmp.py
-│   ├── rabin_karp.py
-│   └── boyer_moore.py
+│   ├── __init__.py              # Xuất API chung cho 4 thuật toán
+│   ├── brute_force.py           # Thuật toán Brute-Force
+│   ├── kmp.py                   # Thuật toán KMP
+│   ├── rabin_karp.py            # Thuật toán Rabin-Karp
+│   └── boyer_moore.py           # Thuật toán Boyer-Moore
 ├── ui/
-│   ├── main_window.py
-│   └── result_view.py
+│   ├── __init__.py              # Khởi tạo package giao diện
+│   ├── main_window.py           # Cửa sổ chính: upload, compare, rank, export
+│   └── result_view.py           # Định dạng chuỗi hiển thị kết quả
 ├── utils/
-│   ├── file_loader.py
-│   ├── timer.py
-│   └── text_normalizer.py
+│   ├── __init__.py              # Khởi tạo package tiện ích
+│   ├── file_loader.py           # Đọc file text, liệt kê file trong thư mục
+│   ├── text_normalizer.py       # Chuẩn hóa chữ thường và khoảng trắng
+│   └── timer.py                 # Đo thời gian thực thi
+├── models/
+│   ├── __init__.py              # Package mô hình dữ liệu
+│   └── match_result.py          # Cấu trúc kết quả match
 ├── data/
-│   ├── corpus/
-│   └── test_cases/
-└── report/
+│   ├── corpus/                  # Kho văn bản gốc tham chiếu
+│   ├── corpus_grouped/          # Kho văn bản đã phân nhóm theo size
+│   │   ├── small/
+│   │   ├── medium/
+│   │   └── large/
+│   ├── test_cases/              # Bộ test đạo văn theo từng kịch bản
+│   │   ├── exact/
+│   │   ├── partial/
+│   │   ├── noise/
+│   │   ├── clean/
+│   │   └── paraphrase/
+│   ├── results/                 # Kết quả benchmark xuất ra CSV/JSON
+│   └── metadata.json            # Metadata cho corpus
+├── scripts/
+│   ├── benchmark.py             # Chạy đo thời gian và tỷ lệ trùng lặp
+│   ├── crawl_wiki.py            # Crawl dữ liệu Wikipedia về corpus
+│   ├── generate_testcase.py     # Tạo test case đạo văn
+│   └── phanloai_corpus.py       # Phân loại corpus theo kích thước
+├── report/
+│   ├── bao-cao-mau.md           # Khung báo cáo mẫu
+│   └── outline-slide-nhom.md    # Dàn ý slide thuyết trình
+└── ke-hoach-thuc-hien/          # File giao việc và tiến độ từng thành viên
+	├── 01_le-thien-loc.md
+	├── 02_do-dinh-chien.md
+	├── 03_nguyen-van-vu.md
+	├── 04_nguyen-thai-loc.md
+	├── 05_huynh-gia-huy.md
+	└── 06_hoang-van-hung.md
 ```
+
+### 6.1 Overview nhanh
+
+- `main.py` là điểm khởi chạy duy nhất của ứng dụng.
+- `algorithms/` chứa 4 thuật toán string matching dùng để so sánh hiệu năng và phát hiện trùng lặp.
+- `ui/` chứa toàn bộ giao diện Tkinter, bao gồm màn hình chính và phần hiển thị kết quả.
+- `utils/` gom các hàm dùng chung như đọc file, chuẩn hóa text, đo thời gian.
+- `models/` giữ các cấu trúc dữ liệu kết quả để thống nhất đầu ra giữa các module.
+- `data/` là nơi đặt corpus, test case, kết quả thực nghiệm và metadata.
+- `scripts/` là các script hỗ trợ crawl dữ liệu, tạo test, phân loại corpus, benchmark.
+- `report/` chứa khung báo cáo và dàn ý slide.
+- `ke-hoach-thuc-hien/` lưu kế hoạch và phân công từng thành viên trong nhóm.
 
 ---
 
