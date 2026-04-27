@@ -1,16 +1,7 @@
-import re
-import time
+from __future__ import annotations
 
-# ===============================
-# Chuẩn hóa text
-# ===============================
-def normalize(text):
-    return re.sub(r'\s+', ' ', text.lower()).strip()
 
-# ===============================
-# KMP - build LPS
-# ===============================
-def build_lps(pattern):
+def _build_lps(pattern: str) -> list[int]:
     lps = [0] * len(pattern)
     j = 0
 
@@ -24,15 +15,14 @@ def build_lps(pattern):
 
     return lps
 
-# ===============================
-# KMP - search
-# ===============================
-def kmp_search(pattern, text):
-    if not pattern or len(pattern) > len(text):
+
+def search(pattern: str, text: str) -> list[int]:
+    """Return all start indices where pattern appears in text (KMP)."""
+    if not pattern or not text or len(pattern) > len(text):
         return []
 
-    lps = build_lps(pattern)
-    result = []
+    lps = _build_lps(pattern)
+    matches: list[int] = []
     j = 0
 
     for i in range(len(text)):
@@ -43,39 +33,12 @@ def kmp_search(pattern, text):
             j += 1
 
         if j == len(pattern):
-            result.append(i - j + 1)
+            matches.append(i - j + 1)
             j = lps[j - 1]
 
-    return result
+    return matches
 
-# ===============================
-# HÀM CHẠY CHUNG
-# ===============================
-def run_kmp(text, pattern):
-    text = normalize(text)
-    pattern = normalize(pattern)
 
-    start = time.perf_counter()
-    result = kmp_search(pattern, text)
-    end = time.perf_counter()
-
-    return result, end - start
-
-# ===============================
-# MAIN
-# ===============================
-if __name__ == "__main__":
-    print("===== PHÁT HIỆN ĐẠO VĂN (KMP) =====")
-
-    text = input("Nhập văn bản: ")
-    pattern = input("Nhập đoạn nghi ngờ: ")
-
-    result, t = run_kmp(text, pattern)
-
-    print("\nKết quả:", result)
-    print("Số lần:", len(result))
-
-    for pos in result:
-        print(f"- \"{text[pos:pos+len(pattern)]}\"")
-
-    print(f"Thời gian: {t:.6f}s")
+def kmp_search(pattern: str, text: str) -> list[int]:
+    """Backward-compatible alias for legacy imports."""
+    return search(pattern, text)

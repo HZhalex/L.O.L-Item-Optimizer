@@ -96,3 +96,44 @@ Lê Thiên Lộc là người phụ trách nền tảng kỹ thuật và trải 
 - Phối hợp với Huỳnh Gia Huy để kiểm thử giao diện bằng dữ liệu thật.
 - Phối hợp với Nguyễn Thái Lộc để đảm bảo UI hiển thị đúng số liệu thực nghiệm và biểu đồ.
 - Phối hợp với Hoàng Văn Hưng để thống nhất phần trình bày slide đầu và ngữ cảnh thuật toán.
+
+---
+
+## 5. Cập Nhật Trạng Thái Thực Tế (Đối Chiếu Repo)
+
+**Ngày cập nhật:** 27/04/2026
+
+### 5.1 Tổng kết nhanh
+
+- Trạng thái chung: **Đã hoàn thành bộ chức năng chính theo phạm vi giao việc**.
+- Đã có khung hệ thống, UI hoàn chỉnh cho demo, compare, export và xếp hạng corpus.
+- Việc còn lại chủ yếu là tăng độ ổn định và bổ sung kiểm thử tích hợp.
+
+### 5.2 Checklist theo đầu việc của Lê Thiên Lộc
+
+| Hạng mục | Trạng thái | Ghi chú |
+|---|---|---|
+| Chốt cấu trúc thư mục dự án | Đã hoàn thành | Có `algorithms`, `ui`, `utils`, `data`, `report` |
+| Luồng xử lý cơ bản (upload -> normalize -> search -> highlight) | Đã hoàn thành một phần | Đã có trong `ui/main_window.py` |
+| Chuẩn hóa API thuật toán thống nhất | Đã hoàn thành | `algorithms/kmp.py` đã có `search(pattern, text)` và alias tương thích ngược |
+| Hàm dùng chung (đọc file, normalize, timer) | Đã hoàn thành | Có trong `utils/file_loader.py`, `utils/text_normalizer.py`, `utils/timer.py` |
+| UI upload + preview text | Đã hoàn thành | Có nút upload và vùng hiển thị text |
+| UI highlight đoạn trùng | Đã hoàn thành | Dùng tag `match` trong Text widget |
+| Panel thống kê kết quả | Đã hoàn thành cơ bản | Có số match, thời gian, similarity ước lượng |
+| Chọn thuật toán để chạy | Đã hoàn thành | Combobox 4 thuật toán |
+| Nút `Compare Algorithms` | Đã hoàn thành | Đã chạy so sánh 4 thuật toán trong UI |
+| Nút `Export Result` | Đã hoàn thành | Đã hỗ trợ xuất CSV/JSON từ kết quả chạy |
+| Scrollbar cho vùng văn bản dài | Đã hoàn thành | Đã thêm thanh cuộn dọc/ngang cho vùng văn bản |
+| Tích hợp so sánh theo nhiều file corpus trong UI | Đã hoàn thành | Hỗ trợ chọn nhiều file, chọn thư mục corpus, gộp dữ liệu và loại trùng |
+| Quản lý Git/PR theo quy trình nhóm | Chưa đủ bằng chứng | Cần đối chiếu lịch sử nhánh/PR trên GitHub |
+
+### 5.3 Việc Cần Làm Tiếp (Ưu tiên)
+
+1. Viết test tích hợp UI-Algorithm với dữ liệu lớn để xác nhận tính ổn định.
+2. Bổ sung bộ test hồi quy cho các luồng compare/rank/export để tránh lỗi khi demo.
+
+### 5.4 Kết luận tiến độ vai trò Lê Thiên Lộc
+
+- Mức hoàn thành hiện tại: **khoảng 95%** so với phạm vi công việc đã mô tả.
+- Đã hoàn thiện bộ chức năng chính: upload, chạy thuật toán, compare, highlight, export, xếp hạng top corpus.
+- Phần còn lại chủ yếu là củng cố kiểm thử tích hợp và chuẩn hóa quy trình review/PR.
