@@ -64,6 +64,31 @@ class MainWindow:
 			f"total unique: {len(self.corpus_files)}"
 		)
 
+	def _normalize_with_map(self, text: str) -> tuple[str, list[int]]:
+		"""Normalize text and keep a map from normalized index to raw index."""
+		normalized_chars: list[str] = []
+		index_map: list[int] = []
+		prev_space = False
+
+		for raw_idx, ch in enumerate(text):
+			lower = ch.lower()
+			if lower.isspace():
+				if normalized_chars and not prev_space:
+					normalized_chars.append(" ")
+					index_map.append(raw_idx)
+				prev_space = True
+				continue
+
+			normalized_chars.append(lower)
+			index_map.append(raw_idx)
+			prev_space = False
+
+		if normalized_chars and normalized_chars[-1] == " ":
+			normalized_chars.pop()
+			index_map.pop()
+
+		return "".join(normalized_chars), index_map
+
 	def setup_ui(self) -> None:
 		top = ttk.Frame(self.root, padding=10)
 		top.pack(fill=tk.X)
@@ -171,7 +196,7 @@ class MainWindow:
 			messagebox.showwarning(MISSING_PATTERN_TITLE, MISSING_PATTERN_MSG)
 			return
 
-		text = normalize_text(self.text_content)
+		text, index_map = self._normalize_with_map(self.text_content)
 		algorithm = self.algorithm_var.get()
 
 		search_map = {
@@ -187,7 +212,7 @@ class MainWindow:
 		elapsed_ms = timer.stop()
 		similarity = (len(matches) * len(pattern) / max(1, len(text))) * 100
 
-		self._highlight_matches(matches, len(pattern))
+		self._highlight_matches(matches, len(pattern), index_map=index_map)
 		self.last_run_result = {
 			"algorithm": algorithm,
 			"matches": len(matches),
@@ -210,7 +235,7 @@ class MainWindow:
 			messagebox.showwarning(MISSING_PATTERN_TITLE, MISSING_PATTERN_MSG)
 			return
 
-		text = normalize_text(self.text_content)
+		text, index_map = self._normalize_with_map(self.text_content)
 		results: list[dict[str, float | int | str]] = []
 
 		search_map = {
@@ -238,7 +263,7 @@ class MainWindow:
 		selected = self.algorithm_var.get()
 		selected_row = next((r for r in results if r["algorithm"] == selected), None)
 		if selected_row is not None:
-			self._highlight_matches(search_map[selected](pattern, text), len(pattern))
+			self._highlight_matches(search_map[selected](pattern, text), len(pattern), index_map=index_map)
 
 		self.last_compare_results = results
 		self.last_run_result = None
@@ -267,7 +292,8 @@ class MainWindow:
 		results: list[dict[str, float | int | str]] = []
 		for corpus_path in self.corpus_files:
 			try:
-				text = normalize_text(read_text_file(corpus_path))
+				text_raw = read_text_file(corpus_path)
+				text, _ = self._normalize_with_map(text_raw)
 			except Exception:
 				continue
 
@@ -298,12 +324,12 @@ class MainWindow:
 		top = results[0]
 		try:
 			top_text_raw = read_text_file(str(top["file_path"]))
-			top_text = normalize_text(top_text_raw)
+			top_text, top_index_map = self._normalize_with_map(top_text_raw)
 			top_matches = search_fn(pattern, top_text)
 			if self.text_widget:
 				self.text_widget.delete("1.0", tk.END)
 				self.text_widget.insert(tk.END, top_text_raw)
-			self._highlight_matches(top_matches, len(pattern))
+			self._highlight_matches(top_matches, len(pattern), index_map=top_index_map)
 		except Exception:
 			pass
 
@@ -372,14 +398,29 @@ class MainWindow:
 		with open(file_path, "w", encoding="utf-8") as output:
 			json.dump(payload, output, ensure_ascii=False, indent=2)
 
-	def _highlight_matches(self, matches: list[int], pattern_len: int) -> None:
+	def _highlight_matches(self, matches: list[int], pattern_len: int, index_map: list[int] | None = None) -> None:
 		if not self.text_widget:
 			return
 		self.text_widget.tag_remove("match", "1.0", tk.END)
 
+		if pattern_len <= 0:
+			return
+
+		if index_map is None:
+			for pos in matches:
+				start = f"1.0+{pos}c"
+				end = f"1.0+{pos + pattern_len}c"
+				self.text_widget.tag_add("match", start, end)
+			return
+
 		for pos in matches:
-			start = f"1.0+{pos}c"
-			end = f"1.0+{pos + pattern_len}c"
+			end_pos = pos + pattern_len - 1
+			if pos < 0 or end_pos >= len(index_map):
+				continue
+			start_raw = index_map[pos]
+			end_raw_exclusive = index_map[end_pos] + 1
+			start = f"1.0+{start_raw}c"
+			end = f"1.0+{end_raw_exclusive}c"
 			self.text_widget.tag_add("match", start, end)
 
 	def run(self) -> None:
